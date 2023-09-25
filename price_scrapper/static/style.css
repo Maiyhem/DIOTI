@@ -245,10 +245,10 @@ body {
     
   .fp{
     font-size: 16px;
-    color: #23a2f6;
+    color: #b90ebe;
     text-align: center;
   }
   .fp:hover{
-    color: #b90ebe;
+    color: #23a2f6;
     transition: all 0.1 ease-in-out;
   }
