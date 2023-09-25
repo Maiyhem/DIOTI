@@ -42,11 +42,13 @@
               <th scope="col">Order</th>
               <th scope="col">Name</th>
               <th scope="col">Link</th>
-              <th scope="col">Target</th>
+              <th scope="col">Status</th>
               <th scope="col">Price</th>
             </tr>
           </thead>
+          
           <tbody>
+             {% for p in products %}
             <tr scope="row">
               <th scope="row">
                 <label class="control control--checkbox">
@@ -55,125 +57,18 @@
                 </label>
               </th>
               <td>
-                1392
+                {{p.id}}
               </td>
-              <td><a href="#">James Yates</a></td>
-              <td>
-                Web Designer
-                <small class="d-block">Far far away, behind the word mountains</small>
+              <td><a href="#">{{p.name}}</a></td>
+              <td style="max-width: 300px;">
+                {{p.target_link}}
               </td>
-              <td>+63 983 0962 971</td>
-              <td>NY University</td>
+              <td>{{p.crawl_status}}</td>
+              <td>{{p.price}}</td>
             </tr>
             <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>4616</td>
-              <td><a href="#">Matthew Wasil</a></td>
-              <td>
-                Graphic Designer
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+02 020 3994 929</td>
-              <td>London College</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>9841</td>
-              <td><a href="#">Sampson Murphy</a></td>
-              <td>
-                Mobile Dev
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+01 352 1125 0192</td>
-              <td>Senior High</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>9548</td>
-              <td><a href="#">Gaspar Semenov</a></td>
-              <td>
-                Illustrator
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+92 020 3994 929</td>
-              <td>College</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>4616</td>
-              <td><a href="#">Matthew Wasil</a></td>
-              <td>
-                Graphic Designer
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+02 020 3994 929</td>
-              <td>London College</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>9841</td>
-              <td><a href="#">Sampson Murphy</a></td>
-              <td>
-                Mobile Dev
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+01 352 1125 0192</td>
-              <td>Senior High</td>
-            </tr>
-            <tr class="spacer"><td colspan="100"></td></tr>
-            <tr>
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
-              
-              <td>9548</td>
-              <td><a href="#">Gaspar Semenov</a></td>
-              <td>
-                Illustrator
-                <small class="d-block">Far far away, behind the word mountains</small>
-              </td>
-              <td>+92 020 3994 929</td>
-              <td>College</td>
-            </tr>
             
+            {% endfor %}
           </tbody>
           <div>
             <button class="my-btn my-btn-class-31">Refresh Price</button>
