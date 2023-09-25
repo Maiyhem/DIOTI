@@ -252,3 +252,8 @@ body {
     color: #23a2f6;
     transition: all 0.1 ease-in-out;
   }
+  
+  .my-btn-class-32 { width: 200px; font-size: 16px; font-weight: 600; color: rgb(255, 255, 255); cursor: pointer; margin: 20px; height: 55px; text-align: center; border: none; background-size: 300% 100%; border-radius: 50px; transition: background 0.4s ease-in-out 0s; background-image: linear-gradient(to right, rgb(98, 83, 225), rgb(133, 45, 145), rgb(163, 161, 255), rgb(242, 70, 69)); box-shadow: rgba(126, 52, 161, 0.75) 0px 4px 15px 0px; }
+  .my-btn-class-32:hover { background-position: 100% 0px; transition: background 0.4s ease-in-out 0s; }
+  .my-btn-class-32:focus { outline: none; }
+  .my-btn-class-32:active { box-shadow: rgba(126, 52, 161, 0.75) 0px 4px 5px 0px; transition: all 0.1s ease-in-out 0s; transform: translateY(2px); }
