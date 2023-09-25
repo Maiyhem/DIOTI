@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('',include(scrapper_urls) ),
+    path('accounts/', include('allauth.urls')),
 ]
