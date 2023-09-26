@@ -1,21 +1,40 @@
-{% extends "account/base.html" %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
 {% load i18n %}
+{% load static %}
+{% load account socialaccount %}
 
-{% block head_title %}{% trans "Sign Out" %}{% endblock head_title %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+    <title>Price scrapper</title>
+</head>
+<body>
+    <header>
+    </header>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
-{% block content %}
-<h1>{% trans "Sign Out" %}</h1>
 
-<p>{% trans 'Are you sure you want to sign out?' %}</p>
+
 
 <form method="post" action="{% url 'account_logout' %}">
+<h1>{% trans "Sign Out" %}</h1>
+
+<h4>{% trans 'Are you sure you want to sign out?' %}</h4>
+
   {% csrf_token %}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
   {% endif %}
-  <button type="submit">{% trans 'Sign Out' %}</button>
+  <button class="my-btn my-btn-class-31" type="submit">{% trans 'Sign Out' %}</button>
 </form>
 
 
-{% endblock content %}
+</body>
+</html>
