@@ -9,8 +9,6 @@
 {% load static %}
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Sign Innnnn" %}{% endblock head_title %}
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -27,6 +25,12 @@
 
 
 
+    {% for m in messages %}
+
+    <p>{{m}}</p>
+    
+    {% endfor %}
+     
 
 
 
@@ -38,6 +42,7 @@
   <h4>{{ form.password.label }} </h4>
   {{ form.password }}
   {% if redirect_field_value %}
+  
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
   <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
