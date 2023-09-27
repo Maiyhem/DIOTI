@@ -9,5 +9,7 @@ urlpatterns = [
 
     path('scrape_prices/', views.scrap_update_all_prices, name='scrape_prices'),
 
+    path('ajax-update-target-link/', views.update_product_targetlink, name='ajax-update-target-link'),
+
     path('update-product-list/', views.update_product_list, name='update-product-list'),
 ]

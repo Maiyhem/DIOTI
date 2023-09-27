@@ -118,7 +118,22 @@ def web_update_all_prices(request):
         # Add your price scraping code here
     return True
 
+def update_product_targetlink(request):
+    if request.method == "POST":
+        # Get the product ID and updated target link from the POST data
+        product_id = request.POST.get("product_id")
+        updated_target_link = request.POST.get("target_link")
 
+        # Perform the update here (e.g., update the Product model)
+        try:
+            product = Product.objects.get(pk=product_id)
+            product.target_link = updated_target_link
+            product.save()
+            return JsonResponse({"success": True})
+        except Product.DoesNotExist:
+            pass
+
+    return JsonResponse({"success": False})
 
 
 def translate_persian_numerals_to_latin(text):

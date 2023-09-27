@@ -20,61 +20,61 @@
   </head>
   <body>
   <div class="content">
+
+
     <div class="container">
+
+    <button class="my-btn my-btn-class-31" id="updateProductListBtn" >Update Product List</button>
+
+    <button class="my-btn my-btn-class-31" id="scrapAll">Scrap All</button>
+
+    <button class="my-btn my-btn-class-31" id="webPriceUpdate">Update Web Prices</button>
+
+
       <div class="table-responsive custom-table-responsive">
         <table class="table custom-table">
+          {% csrf_token %}
           <thead>
             <tr>  
-
-              <th scope="col">
-                <label class="control control--checkbox">
-                  <input type="checkbox"  class="js-check-all"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
               
-              <th scope="col">Order</th>
+              <th scope="col">ID</th>
               <th scope="col">Name</th>
               <th scope="col">Link</th>
               <th scope="col">Status</th>
+              <th scope="col">Last Price Update</th>ss
+              <th scope="col">Last scraped</th>
               <th scope="col">Price</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           
           <tbody>
              {% for p in products %}
             <tr scope="row">
-              <th scope="row">
-                <label class="control control--checkbox">
-                  <input type="checkbox"/>
-                  <div class="control__indicator"></div>
-                </label>
-              </th>
               <td>
                 {{p.id}}
               </td>
               <td><a href="#">{{p.name}}</a></td>
-              <td style="max-width: 300px;">
-                {{p.target_link}}
+              <td style="width: 300px;">
+                <input
+                    id = "targetLink_{{p.id}}"
+                    type="text"
+                    class="target-link-input"
+                    value="{{ p.target_link }}"
+                  />
               </td>
               <td>{{p.crawl_status}}</td>
+              <td>{{p.last_web_price_update}}</td>
+              <td>{{p.last_scrape}}</td>
               <td>{{p.price}}</td>
+              <td>
+               <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+              </td>
             </tr>
             <tr class="spacer"><td colspan="100"></td></tr>
             
             {% endfor %}
           </tbody>
-          <div>
-            <button class="my-btn my-btn-class-31" id="updateProductListBtn" >Update Product List</button>
-
-            <button class="my-btn my-btn-class-31" id="scrapAll">Scrap All</button>
-
-            <button class="my-btn my-btn-class-31" id="webPriceUpdate">Update Web Prices</button>
-
-
-      
-            
-        </div>
         
         </table>
       </div>
@@ -158,7 +158,51 @@
         });
     });
 
+    function updateProduct(productId) {
+        // Get the updated target link from the input field
+        const confirmed = confirm("Are you sure you want to update this product?");
 
+        // Check the user's choice
+        if (confirmed) {
+          // User clicked "OK," proceed with the update
+          const updatedTargetLink = $(`#targetLink_${productId}`).val();
+          const data = {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          product_id: productId,
+          target_link: updatedTargetLink,
+        };
+
+          $.ajax({
+                url: "{% url 'ajax-update-target-link' %}",  // URL of your Django view
+                type: "POST",
+                data: data,
+                success: function (response) {
+                  // Handle the success response here
+                  if (response.success) {
+                    alert("Update successful!");
+                    // You can update the UI here if needed
+                  } else {
+                    alert("Update failed.");
+                    // Handle any other response if needed
+                  }
+                },
+                error: function () {
+                  // Handle errors here
+                  alert("Error occurred during the update.");
+                },
+        });
+        } else {
+          alert('not confirmed')
+          // User clicked "Cancel," do nothing or provide feedback
+          // You can optionally add a message here or take other actions.
+        }
+
+
+       
+        // Perform the update using AJAX (you'll need to implement this)
+        // You can use productId and updatedTargetLink to send the data to your server
+        // ...
+      }
 
     </script>
   </body>
