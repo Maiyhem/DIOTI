@@ -1,9 +1,11 @@
+import datetime
+from django.utils import timezone
 from bs4 import BeautifulSoup
 from django.shortcuts import render
 import sqlite3
 import base64
 import requests
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Product
 import json
 
@@ -11,7 +13,7 @@ import json
 
 def index(request):
 
-    return render(request, 'product_list.html',)
+    return render(request, 'web/index.html',)
 
 
 def product_list(request):
@@ -73,29 +75,48 @@ def scrap_update_all_prices(request):
         product_id = product.id
         product_name= product.name
         target_link = product.target_link
-        if target_link:
+        if target_link and (product.last_scrape == None or product.last_scrape < (timezone.now() - datetime.timedelta(days=1))):
             price = scrape_price(target_link, product_name)
             if price:
                 if price != 'CallUs':
                     product.price = price
                     product.crawl_status = "Success"
+                    product.last_scrape = timezone.now()
                     product.save()
-                    update_website_price(product)
-                    print(f'Updated price for {product_name} to {price}')
+                    print(f'Updated Database price for {product_name} to {price}')
                 else:
                     product.price = price
                     product.crawl_status = "Call Us Price"
+                    product.last_scrape = timezone.now()
                     product.save()
-                    update_website_price(product)
-                    print(f'Callus price for {product_name} ')
+
+                    print(f'Database price for {product_name} Callus ')
             else:
                 product.price = "No Price"
                 product.crawl_status = "Could not scrape price"
+                product.last_scrape = timezone.now()
                 product.save()
-                update_website_price(product)
                 print(f'Failed to update price for {product_name}')
         # Add your price scraping code here
-        return HttpResponse("Prices scraped and updated successfully.")
+    response_data = {'message': 'Success'}
+    return JsonResponse(response_data)
+
+
+
+
+def web_update_all_prices(request):
+    products = Product.objects.all().exclude(target_link = None)
+    for product in products:
+        product_id = product.id
+        product_name= product.name
+        status = product.crawl_status
+        target_link = product.target_link
+        if target_link != '' and status != 'Could not scrape price' :
+            update_website_price(product)
+        else:
+            print(f'No target_link for product id : {product_id}: {product_name}')
+        # Add your price scraping code here
+    return True
 
 
 
@@ -117,13 +138,19 @@ def update_website_price(product):
     endpoint = '/products'
     update_url = f'{base_url}{endpoint}/{product_id}'
     headers = woocomerce_login()
-    new_price_data = {
-            'regular_price': new_price
-        }
+    if new_price != 'CallUs':
+        new_price_data = {
+                'regular_price': new_price
+            }
+        print(new_price)
+    else : 
+        new_price_data = {
+                'regular_price': int(float(0))
+            }
     print(new_price)
 
     
-    if link != '':
+    if  link != '' and (product.last_web_price_update == None or product.last_web_price_update < (timezone.now() - datetime.timedelta(days=1))):
     
         # Construct the update URL for the specific product
         # Define the new price in the format expected by WooCommerce
@@ -131,11 +158,12 @@ def update_website_price(product):
         response = requests.put(update_url, headers=headers, data = json.dumps(new_price_data))
 
         if response.status_code == 200:
-            print(response.content.decode('utf-8'))
-            print(f'Successfully updated price for Product ID {product_id}{product_name}')
+            #print(response.content.decode('utf-8'))
+            product.last_web_price_update = timezone.now()
+            print(f'Web Price updated Product ID {product_id} : {product_name}')
         else:
             print(response.content.decode('utf-8'))
-            print(f'Error updating price for Product ID {product_id}: {response.status_code}')
+            print(f'Error updating price for Product ID {product_id} : {response.status_code}')
     return
 
 def update_product_list(request):
@@ -157,16 +185,26 @@ def update_product_list(request):
             #print(response.content)
             if not products_data:
                 break  #No more products to retrieve
-            
+
             for product in products_data:
-
-                print (int(product['id']),"---",product['name'],"---",product['regular_price'])
-                p =  Product.objects.get_or_create(id = int(product['id']),name = product['name'], price = product['regular_price'])
-
+                try:
+                    # Try to get the existing product with the given id
+                    existing_product = Product.objects.get(id=int(product['id']))
+                except Product.DoesNotExist:
+                    # If it doesn't exist, create a new product
+                    existing_product = None
+                if existing_product is None: 
+                    p =  Product.objects.get_or_create(id = int(product['id']),name = product['name'], price = product['regular_price'])
+                    if p :
+                        print(f"Created product with ID {product['id']}")
+                else:
+                    # Product already exists, you can choose to do something with it if needed
+                    print(f"Product with ID {product['id']} already exists")
+                    pass
 
             page += 1  #Move to the next page of results
         else:
-            print(f'Error: {response.status_code}')
+            print(f'Error: {response.text}')
             print(str(response.content).encode('utf-8'))
             break  # Exit the loop on error
 
@@ -181,6 +219,8 @@ def woocomerce_login():
     auth_string = f'{api_key}:{api_secret}'
     auth_header = 'Basic ' + base64.b64encode(auth_string.encode()).decode()
     headers = {
-        'Authorization': auth_header    }
+        'Authorization': auth_header ,
+        'Content-Type': 'application/json'
+            }
 
     return headers
