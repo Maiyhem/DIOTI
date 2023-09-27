@@ -6,7 +6,8 @@ class Product(models.Model):
     price = models.CharField(max_length =  20 ,null=True, blank=True)
     target_link = models.URLField(max_length=255, null=True, blank=True)
     crawl_status = models.CharField(max_length=50, default="No Price")
-    
+    last_scrape = models.DateTimeField(default=None,blank=True,null=True)
+    last_web_price_update = models.DateTimeField(default=None,blank=True,null=True)
 
     def  __str__(self) -> str:
         return str(self.id)+self.name
