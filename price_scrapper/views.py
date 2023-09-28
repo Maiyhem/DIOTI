@@ -13,7 +13,7 @@ import json
 
 def index(request):
 
-    return render(request, 'web/index.html',)
+    return render(request, 'Mpage.html',)
 
 
 def product_list(request):
