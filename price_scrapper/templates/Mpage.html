@@ -28,6 +28,7 @@
             transition: background-color 0.3s ease;
             margin: 10px;
         }
+        
 
         /* Define colors for each column */
         .column:nth-child(1) { background-color: #4bb1e6; }
@@ -64,6 +65,31 @@ background-size: contain;
             color: white;
             letter-spacing: 20px;
         }
+        .falling{
+            z-index: 10;
+            
+            position: absolute;
+              top: 40%; 
+              right: 30%;
+              width: auto;
+              height: 25%;
+              padding: 0;
+background-size: contain;
+rotate: 300deg;
+}
+
+.laptop{
+            z-index: 10;
+            
+            position: absolute;
+              top: 33%; 
+              right: 42%;
+              width: auto;
+              height: 9%;
+              padding: 0;
+background-size: contain;
+rotate: 32deg;
+}
     </style>
 </head>
 <body>
@@ -83,5 +109,8 @@ background-size: contain;
    </div>
 
          <div class="city"></div> 
+         <img class="falling" src="../static/falling.png" alt="falling">
+         
+         <img class="laptop" src="../static/lt.png" alt="lt">
 </body>
 </html>
