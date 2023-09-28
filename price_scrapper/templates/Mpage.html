@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body{
+            background-color: black;
+        }
+        /* Container styling */
+        .container {
+            display: flex;
+            height: 600px  !important;
+            padding: 10px;
+             /* To hide content that exceeds the max height */
+        }
+
+        /* Column styling */
+        .column {
+            flex: 1; /* Equal width for all columns */
+            height: 100% !important; /* Occupy full height of the container */
+            text-align: center;
+            color: rgb(0, 0, 0);
+            font-size: 24px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+        }
+
+        /* Define colors for each column */
+        .column:nth-child(1) { background-color: #4bb1e6; }
+        .column:nth-child(2) { background-color: #009cf9; }
+        .column:nth-child(3) { background-color: #536ce9; }
+        .column:nth-child(4) { background-color: #6564e3; }
+        .column:nth-child(5) { background-color: #6160dc; }
+        .column:nth-child(6) { background-color: #9f72d4; }
+        .column:nth-child(7) { background-color: #b56db6; }
+        .column:nth-child(8) { background-color: #dc7bb1; }
+
+
+        /* Hover effect */
+        .column:hover {
+            background-color: rgba(0, 0, 0, 0.6); /* Dim the color on hover */
+            cursor: pointer;
+        }
+        .city{
+              z-index: 10;
+              position: absolute;
+              bottom: 0; 
+              width: 100%;
+              height: 200px;
+              background-image:  url('../static/Vector.png');
+              background-size: 800px;
+              padding: 0;
+        }
+        .header{
+            height: 100px;
+            text-align:center;
+        }
+        .logo{
+            font-size: 50px;
+            color: white;
+            letter-spacing: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        
+        <h1 class='logo'>DIOTI</h1>
+    </div>
+    <div class="container">
+        <div class="column">Column 1</div>
+        <div class="column">Column 2</div>
+        <div class="column">Column 3</div>
+        <div class="column">Column 4</div>
+        <div class="column">Column 5</div>
+        <div class="column">Column 6</div>
+        <div class="column">Column 7</div>
+        <div class="column">Column 8</div>
+         <div class="city"></div>
+    </div>
+</body>
+</html>
