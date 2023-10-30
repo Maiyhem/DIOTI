@@ -75,24 +75,24 @@ def scrap_update_all_prices(request):
         product_id = product.id
         product_name= product.name
         target_link = product.target_link
-        if target_link and (product.last_scrape == None or product.last_scrape < (timezone.now() - datetime.timedelta(days=1))):
+        if target_link != "" and (product.last_scrape == None or product.last_scrape < (timezone.now() - datetime.timedelta(days=1))):
             price = scrape_price(target_link, product_name)
             if price:
                 if price != 'CallUs':
-                    product.price = price
+                    product.scrap_price = price
                     product.crawl_status = "Success"
                     product.last_scrape = timezone.now()
                     product.save()
                     print(f'Updated Database price for {product_name} to {price}')
                 else:
-                    product.price = price
+                    product.scrap_price = price
                     product.crawl_status = "Call Us Price"
                     product.last_scrape = timezone.now()
                     product.save()
 
                     print(f'Database price for {product_name} Callus ')
             else:
-                product.price = "No Price"
+                product.scrap_price = ""
                 product.crawl_status = "Could not scrape price"
                 product.last_scrape = timezone.now()
                 product.save()
@@ -113,7 +113,7 @@ def web_update_all_prices(request):
         target_link = product.target_link
         if target_link != '' and status != 'Could not scrape price' :
             update_website_price(product)
-        else:
+        else :
             print(f'No target_link for product id : {product_id}: {product_name}')
         # Add your price scraping code here
     return True
@@ -145,7 +145,7 @@ def translate_persian_numerals_to_latin(text):
 
 def update_website_price(product):
     product_id = product.id
-    new_price = product.price
+    new_price = product.web_price
     status = product.crawl_status
     link = product.target_link
     product_name = product.name
@@ -157,12 +157,10 @@ def update_website_price(product):
         new_price_data = {
                 'regular_price': new_price
             }
-        print(new_price)
     else : 
         new_price_data = {
                 'regular_price': int(float(0))
             }
-    print(new_price)
 
     
     if  link != '' and (product.last_web_price_update == None or product.last_web_price_update < (timezone.now() - datetime.timedelta(days=1))):
@@ -175,7 +173,7 @@ def update_website_price(product):
         if response.status_code == 200:
             #print(response.content.decode('utf-8'))
             product.last_web_price_update = timezone.now()
-            print(f'Web Price updated Product ID {product_id} : {product_name}')
+            print(f'Web Price updated Product ID {product_id} : {product_name} : {new_price}')
         else:
             print(response.content.decode('utf-8'))
             print(f'Error updating price for Product ID {product_id} : {response.status_code}')
@@ -209,12 +207,14 @@ def update_product_list(request):
                     # If it doesn't exist, create a new product
                     existing_product = None
                 if existing_product is None: 
-                    p =  Product.objects.get_or_create(id = int(product['id']),name = product['name'], price = product['regular_price'])
+                    p =  Product.objects.get_or_create(id = int(product['id']),name = product['name'], web_price = product['regular_price'])
                     if p :
                         print(f"Created product with ID {product['id']}")
                 else:
                     # Product already exists, you can choose to do something with it if needed
-                    print(f"Product with ID {product['id']} already exists")
+                    if existing_product.target_link == '':
+                        existing_product.web_price =  product['regular_price']
+                    print(f"Product with ID {product['id']} already exists.")
                     pass
 
             page += 1  #Move to the next page of results

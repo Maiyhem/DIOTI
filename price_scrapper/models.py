@@ -3,7 +3,8 @@ from django.db import models
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    price = models.CharField(max_length =  20 ,null=True, blank=True)
+    web_price = models.CharField(max_length =  20 ,null=True, blank=True)
+    scrap_price = models.CharField(max_length =  20 ,null=True, blank=True)
     target_link = models.URLField(max_length=255, null=True, blank=True)
     crawl_status = models.CharField(max_length=50, default="No Price")
     last_scrape = models.DateTimeField(default=None,blank=True,null=True)
