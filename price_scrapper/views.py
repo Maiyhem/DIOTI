@@ -5,6 +5,7 @@ from django.shortcuts import render
 import sqlite3
 import base64
 import requests
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from .models import Product
 import json
@@ -179,6 +180,9 @@ def update_website_price(product):
             print(f'Error updating price for Product ID {product_id} : {response.status_code}')
     return
 
+
+
+@login_required(login_url="/login/")
 def update_product_list(request):
     
     base_url = 'https://doorbinshot.com/wp-json/wc/v3'
