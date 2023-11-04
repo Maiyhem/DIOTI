@@ -17,6 +17,8 @@ def index(request):
     return render(request, 'Mpage.html',)
 
 
+
+@login_required(login_url="/accounts/login/")
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'table.html', {'products': products})
@@ -70,6 +72,8 @@ def scrape_price(url, product_name):
 
 
 
+
+@login_required(login_url="/accounts/login/")
 def scrap_update_all_prices(request):
     products = Product.objects.all().exclude(target_link = None)
     for product in products:
@@ -105,6 +109,7 @@ def scrap_update_all_prices(request):
 
 
 
+@login_required(login_url="/accounts/login/")
 def web_update_all_prices(request):
     products = Product.objects.all().exclude(target_link = None)
     for product in products:
@@ -119,6 +124,9 @@ def web_update_all_prices(request):
         # Add your price scraping code here
     return True
 
+
+
+@login_required(login_url="/accounts/login/")
 def update_product_targetlink(request):
     if request.method == "POST":
         # Get the product ID and updated target link from the POST data
@@ -182,7 +190,8 @@ def update_website_price(product):
 
 
 
-@login_required(login_url="/login/")
+
+@login_required(login_url="/accounts/login/")
 def update_product_list(request):
     
     base_url = 'https://doorbinshot.com/wp-json/wc/v3'
