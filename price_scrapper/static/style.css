@@ -55,7 +55,7 @@ input{
     display: block;
     height: 50px;
     width: 100%;
-    background-color: rgba(255,255,255,0.07);
+    background-color: #ffffff96;
     border-radius: 3px;
     padding: 0 10px;
     margin-top: 8px;
@@ -123,14 +123,15 @@ body {
       text-decoration: none !important; }
   
   .content {
-    padding: 7rem 0; }
+    padding: 0; }
   
   h2 {
     font-size: 20px;
     color: #fff; }
   
   .custom-table {
-    min-width: 900px; }
+    max-width: 100%;
+    padding: 10px; }
     .custom-table thead tr, .custom-table thead th {
       border-top: none;
       border-bottom: none !important;
@@ -160,7 +161,7 @@ body {
       -o-transition: .3s all ease;
       transition: .3s all ease; }
       .custom-table tbody tr th a, .custom-table tbody tr td a {
-        color: #b3b3b3; }
+        color: #ffffff; }
       .custom-table tbody tr th:first-child, .custom-table tbody tr td:first-child {
         border-top-left-radius: 0px;
         border-bottom-left-radius: 0px; }
@@ -177,7 +178,12 @@ body {
       background: #2e2e36; }
       .custom-table tbody tr.active th a, .custom-table tbody tr.active td a, .custom-table tbody tr:hover th a, .custom-table tbody tr:hover td a {
         color: #fff; }
-  
+    .table-responsive{
+      overflow: hidden;
+    }
+
+
+
   /* Custom Checkbox */
   .control {
     display: block;
@@ -185,7 +191,7 @@ body {
     margin-bottom: 25px;
     cursor: pointer;
     font-size: 18px; }
-  
+   
   .control input {
     position: absolute;
     z-index: -1;
