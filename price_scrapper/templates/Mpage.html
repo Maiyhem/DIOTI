@@ -29,17 +29,18 @@
             border-radius: 10px;
         }
         /* Define colors for each column */
-        .column:nth-child(1) { background-color: #4bb1e6; }
-       .column:nth-child(1):hover{ background-color: rgba(0, 0, 0, 0.6); /* Dim the color on hover */
+        .column:nth-child(1) { background-color: #12913F; }
+       .column:nth-child(1):hover{ 
+box-shadow:inset 0px 50px 100px black;
             cursor: pointer;}
-        .column:nth-child(2) { background-color: #009cf9; }
-        .column:nth-child(3) { background-color: #536ce9; }
+        .column:nth-child(2) { background-color: #094918; }
+        .column:nth-child(3) { background-color: #053806; }
         .column:nth-child(4) { background-color: #000000; }
         .column:nth-child(4):hover {  cursor: pointer;}
-        .column:nth-child(5) { background-color: #6160dc; }
-        .column:nth-child(6) { background-color: #9f72d4; }
-        .column:nth-child(7) { background-color: #b56db6; }
-        .column:nth-child(8) { background-color: #dc7bb1; }
+        .column:nth-child(5) { background-color: #266927; }
+        .column:nth-child(6) { background-color: #386B39; }
+        .column:nth-child(7) { background-color: #4A784B; }
+        .column:nth-child(8) { background-color: #5A845B; }
         /* Hover effect */
         .city{
               z-index: 10;
@@ -54,7 +55,12 @@ background-size: contain;
         }
         canvas {
           display: block;
-    
+          border-radius:20px;
+        }
+        canvas:hover{
+          box-shadow:1px 1px 50px rgb(37, 37, 37);
+          
+          
         }
         .header{
             height: 100px;
@@ -129,7 +135,8 @@ header {
   border-radius: 15px;
   background-color: #ffffff;
   color: rgb(0, 0, 0);
-  border-color: rgb(0, 0, 0);
+  border: solid 3px #12913F;
+  cursor: pointer;
 }
 .header-right {
   float: right;
@@ -152,7 +159,8 @@ header {
            <div class="header-right">
        <a class="active" href="dashboard.html">Home</a>
         <a href="#contact">Contact</a>
-        <a href="product-list">Table</a>
+        <a href="login">Login</a>
+        <a href="logout">LogOut</a>
         <button class="book-button">Profile</button>
       </div>
     </div>

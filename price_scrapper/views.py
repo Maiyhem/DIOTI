@@ -18,6 +18,17 @@ def index(request):
     return render(request, 'Mpage.html',)
 
 
+def home(request):
+
+    return render(request, 'home.html',)
+
+
+
+def dashboard(request):
+
+    return render(request, 'index.html',)
+
+
 
 @login_required(login_url="/accounts/login/")
 def product_list(request):
