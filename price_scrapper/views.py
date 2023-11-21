@@ -19,8 +19,13 @@ def index(request):
 
 
 def home(request):
+    products = Product.objects.all()
+    return render(request, 'home.html', {'products': products})
 
-    return render(request, 'home.html',)
+
+def logs(request):
+    products = Product.objects.all()
+    return render(request, 'logs.html', {'products': products})
 
 
 
