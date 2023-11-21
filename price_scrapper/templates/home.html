@@ -1,8 +1,37 @@
 {% extends "base.html" %}
 
-<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
 {% block content %}
+<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+
 <style>
+ .tab-tab 
+ {
+  background-color: primary;
+  padding:25px;
+  border-radius: 20px;
+  background-color: #333333;
+  margin: 10px;
+ }
+.tab-tab.active
+ {
+  background-color: primary;
+  padding:15px 15px;
+  border: 2px solid rgb(0, 188, 198);
+  border-radius: 20px;
+
+ }
+ .button__badge {
+  background-color: #3e96fa;
+  border-radius: 2px;
+  color: white;
+ 
+  padding: 1px 3px;
+  font-size: 12px;
+  
+  position: relative; /* Position the badge within the relatively positioned button */
+  top: 0;
+  right: 0;
+}
 body{
 background-color: #eee; 
 }
@@ -16,8 +45,8 @@ background-color: #e4e3e3
 }
 
 th {
-background: #333;
-color: #fff;
+background: #ffffff;
+color: #000000;
 }
 
 .pagination {
@@ -52,106 +81,438 @@ color: #999;
 }
 </style>
 
-<ul class="nav nav-tabs" style="text-align: center;">
-    <li class="tab-tab liclass"><a data-toggle="tab" href="#home" class="active" >all <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></li>
-    
-    <li class="tab-tab liclass"><a data-toggle="tab" href="#success"  >success <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></li>
-    <li  class="tab-tab liclass"><a data-toggle="tab" href="#menu1" >No price<span name ='table2_title' id ='table2_title' class="button__badge"></span> </a> </li>
-    <li  class="tab-tab liclass"><a data-toggle="tab" href="#menu2" >Call us<span name ='table3_title' id ='table3_title' class="button__badge"></span></a>  </li>
-    
-    <li  class="tab-tab liclass"><a data-toggle="tab" href="#menu3">error<span name ='table4_title' id ='table4_title' class="button__badge"></span> </a></li>
-    
-  </ul>
 
 
 
-  <div class="tab-content">
-    <div id="home" class="tab-pane fade active show in" style="text-align: right;">
-    <div class="table-responsive">
-      {% csrf_token %}
-      <table id="myTable" class="table custom-table">
         
 <div class="projects-section" style="width: 100%;">
-    <div class="table-responsive">
-        {% csrf_token %}
-        <table id="myTable" class="table custom-table">
-          
-          <thead>
-            <tr>  
-              
-              <th scope="col">ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Link</th>
-              <th scope="col">Status</th>
-              <th scope="col">Last Price Update</th>ss
-              <th scope="col">Last scraped</th>
-              <th scope="col">Web Price</th>
-              <th scope="col">Scrap Price</th>
-              <th scope="col">Action</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-             {% for p in products %}
-            <tr scope="row">
-              <td>
-                {{p.id}}
-              </td>
-              <td><a href="#">{{p.name}}</a></td>
-              <td style="width: 300px;">
-                <input
-                    id = "targetLink_{{p.id}}"
-                    type="text"
-                    class="target-link-input"
-                    value="{{ p.target_link }}"
-                  />
-              </td>
-              <td>{{p.crawl_status}}</td>
-              <td>{{p.last_web_price_update}}</td>
-              <td>{{p.last_scrape}}</td>
-              <td>{{p.web_price}}</td>
-              <td>{{p.scrap_price}}</td>
-              <td>  <input
-                disabled
-                id = "AED_price{{p.id}}"
-                type="text"
-                class="AED-input"
-                value="{{ p.AED_price }}"
-              /></td>
-              <td>
-               <button class="btn btn-primary"  onclick= updateProduct ({{ p.id }}) >confirm</button>
-         
-              
-              </td>
-            </tr>
-            
-            {% endfor %}
-          </tbody>
         
-        </table>
+    <ul class="nav nav-tabs">
+        <li class="tab-tab"><a data-toggle="tab" href="#home" >all <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></li>
+        <li class="tab-tab"><a data-toggle="tab" href="#success"  >success <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></li>
+        <li  class="tab-tab"><a data-toggle="tab" href="#menu1" >No price<span name ='table2_title' id ='table2_title' class="button__badge"></span> </a> </li>
+        <li  class="tab-tab"><a data-toggle="tab" href="#menu2" >Call us<span name ='table3_title' id ='table3_title' class="button__badge"></span></a>  </li>
+        <li  class="tab-tab"><a data-toggle="tab" href="#menu3">error<span name ='table4_title' id ='table4_title' class="button__badge"></span> </a></li>
+        
+    </ul>
 
-      </div>
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade active show in" style="text-align: right;">
+        <div class="table-responsive">
+            {% csrf_token %}
+            <table id="myTable" class="table custom-table">
+            
+            <thead>
+                <tr>  
+                
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Price Update</th>ss
+                <th scope="col">Last scraped</th>
+                <th scope="col">Web Price</th>
+                <th scope="col">Scrap Price</th>
+                <th scope="col">Action</th>
+                <th scope="col">Action</th>
+                </tr>
+            </thead>
+            
+            <tbody>
 
+                {% for p in products %}
+                <tr scope="row">
+                    <td>{{p.id}}</td>
+                    <td><a href="#">{{p.name}}</a></td>
+                    <td style="width: 300px;">
+                    <input
+                        id="targetLink_{{p.id}}"
+                        type="text"
+                        class="target-link-input"
+                        value="{{ p.target_link }}"
+                        disabled
+                    />
+                    </td>
+                    <td>{{p.crawl_status}}</td>
+                    <td>{{p.last_web_price_update}}</td>
+                    <td>{{p.last_scrape}}</td>
+                    <td>{{p.web_price}}</td>
+                    <td>{{p.scrap_price}}</td>
+                    <td>
+                    <input
+                        disabled
+                        id="AED_price{{p.id}}"
+                        type="text"
+                        class="AED-input"
+                        value="{{ p.AED_price }}"
+                    />
+                    </td>
+                    <td>
+                    <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
+                        confirm
+                    </button>
+                    <!-- .squaredThree -->
+                    <div class="squaredThree">
+                        <input
+                        type="checkbox"
+                        value="None"
+                        id="squaredThree_{{p.id}}"
+                        name="check"
+                        onchange="toggleInputs({{ p.id }})"
+                        
+                        />
+                        <label for="squaredThree_{{p.id}}"></label>
+                    </div>
+                    <!-- end .squaredThree -->
+                    </td>
+                </tr>
+                
+                {% endfor %}
+            </tbody>
+            
+            </table>
 
+        </div>
+        </div>
+        <div id="success" class="tab-pane fade  show in" style="text-align: right;">
+            <div class="table-responsive">
+                {% csrf_token %}
+                <table id="myTable1" class="table custom-table">
+                
+                <thead>
+                    <tr>  
+                    
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Link</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Last Price Update</th>ss
+                    <th scope="col">Last scraped</th>
+                    <th scope="col">Web Price</th>
+                    <th scope="col">Scrap Price</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for p in products %}
+                        {% if p.crawl_status == 'Success'%}
+                        <tr scope="row">
+                            <td>{{p.id}}</td>
+                            <td><a href="#">{{p.name}}</a></td>
+                            <td style="width: 300px;">
+                            <input
+                                id="targetLink_{{p.id}}"
+                                type="text"
+                                class="target-link-input"
+                                value="{{ p.target_link }}"
+                                disabled
+                            />
+                            </td>
+                            <td>{{p.crawl_status}}</td>
+                            <td>{{p.last_web_price_update}}</td>
+                            <td>{{p.last_scrape}}</td>
+                            <td>{{p.web_price}}</td>
+                            <td>{{p.scrap_price}}</td>
+                            <td>
+                            <input
+                                disabled
+                                id="AED_price{{p.id}}"
+                                type="text"
+                                class="AED-input"
+                                value="{{ p.AED_price }}"
+                            />
+                            </td>
+                            <td>
+                            <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
+                                confirm
+                            </button>
+                            <!-- .squaredThree -->
+                            <div class="squaredThree">
+                                <input
+                                type="checkbox"
+                                value="None"
+                                id="squaredThree_{{p.id}}"
+                                name="check"
+                                onchange="toggleInputs({{ p.id }})"
+                                
+                                />
+                                <label for="squaredThree_{{p.id}}"></label>
+                            </div>
+                            <!-- end .squaredThree -->
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+                
+                </table>
+        
+            </div>
+            </div>
+
+        <div id="menu1" class="tab-pane fade  show in" style="text-align: right;">
+            <div class="table-responsive">
+                {% csrf_token %}
+                <table id="myTable2" class="table custom-table">
+                    
+                    <thead>
+                    <tr>  
+                        
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Link</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Price Update</th>ss
+                        <th scope="col">Last scraped</th>
+                        <th scope="col">Web Price</th>
+                        <th scope="col">Scrap Price</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for p in products %}
+                        {% if p.crawl_status == 'No Price'%}
+                        <tr scope="row">
+                        <td>{{p.id}}</td>
+                        <td><a href="#">{{p.name}}</a></td>
+                        <td style="width: 300px;">
+                            <input
+                            id="targetLink_{{p.id}}"
+                            type="text"
+                            class="target-link-input"
+                            value="{{ p.target_link }}"
+                            disabled
+                            />
+                        </td>
+                        <td>{{p.crawl_status}}</td>
+                        <td>{{p.last_web_price_update}}</td>
+                        <td>{{p.last_scrape}}</td>
+                        <td>{{p.web_price}}</td>
+                        <td>{{p.scrap_price}}</td>
+                        <td>
+                            <input
+                            disabled
+                            id="AED_price{{p.id}}"
+                            type="text"
+                            class="AED-input"
+                            value="{{ p.AED_price }}"
+                            />
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
+                            confirm
+                            </button>
+                            <!-- .squaredThree -->
+                            <div class="squaredThree">
+                            <input
+                                type="checkbox"
+                                value="None"
+                                id="squaredThree_{{p.id}}"
+                                name="check"
+                                onchange="toggleInputs({{ p.id }})"
+                                
+                            />
+                            <label for="squaredThree_{{p.id}}"></label>
+                            </div>
+                            <!-- end .squaredThree -->
+                        </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                
+                </table>
+        
+                </div>
+            </div>
+
+        <div id="menu2" class="tab-pane fade  show in" style="text-align: right;">
+            <div class="table-responsive">
+                {% csrf_token %}
+                <table id="myTable3" class="table custom-table">
+                    
+                    <thead>
+                    <tr>  
+                        
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Link</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Price Update</th>ss
+                        <th scope="col">Last scraped</th>
+                        <th scope="col">Web Price</th>
+                        <th scope="col">Scrap Price</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for p in products %}
+                        {% if p.crawl_status == 'Call Us Price'%}
+                        <tr scope="row">
+                        <td>{{p.id}}</td>
+                        <td><a href="#">{{p.name}}</a></td>
+                        <td style="width: 300px;">
+                            <input
+                            id="targetLink_{{p.id}}"
+                            type="text"
+                            class="target-link-input"
+                            value="{{ p.target_link }}"
+                            disabled
+                            />
+                        </td>
+                        <td>{{p.crawl_status}}</td>
+                        <td>{{p.last_web_price_update}}</td>
+                        <td>{{p.last_scrape}}</td>
+                        <td>{{p.web_price}}</td>
+                        <td>{{p.scrap_price}}</td>
+                        <td>
+                            <input
+                            disabled
+                            id="AED_price{{p.id}}"
+                            type="text"
+                            class="AED-input"
+                            value="{{ p.AED_price }}"
+                            />
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
+                            confirm
+                            </button>
+                            <!-- .squaredThree -->
+                            <div class="squaredThree">
+                            <input
+                                type="checkbox"
+                                value="None"
+                                id="squaredThree_{{p.id}}"
+                                name="check"
+                                onchange="toggleInputs({{ p.id }})"
+                                
+                            />
+                            <label for="squaredThree_{{p.id}}"></label>
+                            </div>
+                            <!-- end .squaredThree -->
+                        </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                
+                </table>
+        
+                </div>
+            </div>
+
+        <div id="menu3" class="tab-pane fade  show in" style="text-align: right;">
+            <div class="table-responsive">
+                {% csrf_token %}
+                <table id="myTable" class="table custom-table">
+                    
+                    <thead>
+                    <tr>  
+                        
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Link</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Price Update</th>ss
+                        <th scope="col">Last scraped</th>
+                        <th scope="col">Web Price</th>
+                        <th scope="col">Scrap Price</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for p in products %}
+                        {% if p.crawl_status == 'Could not scrape price' or p.crawl_status == 'error {e}'%}
+                        <tr scope="row">
+                        <td>{{p.id}}</td>
+                        <td><a href="#">{{p.name}}</a></td>
+                        <td style="width: 300px;">
+                            <input
+                            id="targetLink_{{p.id}}"
+                            type="text"
+                            class="target-link-input"
+                            value="{{ p.target_link }}"
+                            disabled
+                            />
+                        </td>
+                        <td>{{p.crawl_status}}</td>
+                        <td>{{p.last_web_price_update}}</td>
+                        <td>{{p.last_scrape}}</td>
+                        <td>{{p.web_price}}</td>
+                        <td>{{p.scrap_price}}</td>
+                        <td>
+                            <input
+                            disabled
+                            id="AED_price{{p.id}}"
+                            type="text"
+                            class="AED-input"
+                            value="{{ p.AED_price }}"
+                            />
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
+                            confirm
+                            </button>
+                            <!-- .squaredThree -->
+                            <div class="squaredThree">
+                            <input
+                                type="checkbox"
+                                value="None"
+                                id="squaredThree_{{p.id}}"
+                                name="check"
+                                onchange="toggleInputs({{ p.id }})"
+                                
+                            />
+                            <label for="squaredThree_{{p.id}}"></label>
+                            </div>
+                            <!-- end .squaredThree -->
+                        </td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                    </tbody>
+                
+                </table>
+        
+                </div>
+            </div>
+
+    </div>
 
 
 </div> <!-- 		End of Container -->
-
-
-{% endblock %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script>
 
-    $(document).ready(function(){
+$(document).ready(function(){
         $('#myTable').dataTable();
+        $('#myTable1').dataTable();
+        $('#myTable2').dataTable();
+        $('#myTable3').dataTable();
     });  
 
 
+function toggleInputs(productId) {
+        const targetLinkInput = document.getElementById(`targetLink_${productId}`);
+        const AEDPriceInput = document.getElementById(`AED_price${productId}`);
 
+        if (document.getElementById(`squaredThree_${productId}`).checked) {
+        targetLinkInput.disabled = false;
+        AEDPriceInput.disabled = false;
+        } else {
+        targetLinkInput.disabled = true;
+        AEDPriceInput.disabled = true;
+        }
+    }
 
 function updateProduct(productId) {
         // Get the updated target link from the input field
@@ -199,4 +560,9 @@ function updateProduct(productId) {
         // ...
       }
 
+
+     
+
 </script>
+
+{% endblock %}
