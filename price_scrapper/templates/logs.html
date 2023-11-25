@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+{% block content %}
+<style>
+body{
+background-color: #eee; 
+}
+
+table th , table td{
+    text-align: left;
+}
+
+table tr:nth-child(even){
+background-color: #e4e3e3
+}
+
+th {
+background: #333;
+color: #fff;
+}
+
+.pagination {
+margin: 0;
+}
+
+.pagination li:hover{
+cursor: pointer;
+}
+
+.header_wrap {
+padding:30px 0;
+}
+.num_rows {
+width: 20%;
+float:left;
+}
+.tb_search{
+width: 20%;
+float:right;
+}
+.pagination-container {
+width: 70%;
+float:left;
+}
+
+.rows_count {
+width: 20%;
+float:right;
+text-align:right;
+color: #999;
+}
+</style>
+<div class="projects-section" style="width: 100%;">
+    <div class="table-responsive">
+        {% csrf_token %}
+        <table id="myTable" class="table custom-table">
+          
+          <thead>
+            <tr>  
+              
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">Link</th>
+              <th scope="col">Status</th>
+              <th scope="col">Last Price Update</th>ss
+              <th scope="col">Last scraped</th>
+              <th scope="col">Web Price</th>
+              <th scope="col">Scrap Price</th>
+              <th scope="col">Action</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+             {% for p in products %}
+            <tr scope="row">
+              <td>
+                {{p.id}}
+              </td>
+              <td><a href="#">{{p.name}}</a></td>
+              <td style="width: 300px;">
+                <input
+                    id = "targetLink_{{p.id}}"
+                    type="text"
+                    class="target-link-input"
+                    value="{{ p.target_link }}"
+                  />
+              </td>
+              <td>{{p.crawl_status}}</td>
+              <td>{{p.last_web_price_update}}</td>
+              <td>{{p.last_scrape}}</td>
+              <td>{{p.web_price}}</td>
+              <td>{{p.scrap_price}}</td>
+              <td>  <input
+                disabled
+                id = "AED_price{{p.id}}"
+                type="text"
+                class="AED-input"
+                value="{{ p.AED_price }}"
+              /></td>
+              <td>
+               <button class="btn btn-primary"  onclick= updateProduct ({{ p.id }}) >confirm</button>
+         
+              
+              </td>
+            </tr>
+            
+            {% endfor %}
+          </tbody>
+        
+        </table>
+
+      </div>
+
+
+
+
+</div> <!-- 		End of Container -->
+
+
+{% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+  <script>
+
+    $(document).ready(function(){
+        $('#myTable').dataTable();
+    });  
+
+
+
+
+function updateProduct(productId) {
+        // Get the updated target link from the input field
+        const confirmed = confirm("Are you sure you want to update this product?");
+
+        // Check the user's choice
+        if (confirmed) {
+          // User clicked "OK," proceed with the update
+          const updatedTargetLink = $(`#targetLink_${productId}`).val();
+          const data = {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          product_id: productId,
+          target_link: updatedTargetLink,
+        };
+
+          $.ajax({
+                url: "{% url 'ajax-update-target-link' %}",  // URL of your Django view
+                type: "POST",
+                data: data,
+                success: function (response) {
+                  // Handle the success response here
+                  if (response.success) {
+                    alert("Update successful!");
+                    // You can update the UI here if needed
+                  } else {
+                    alert("Update failed.");
+                    // Handle any other response if needed
+                  }
+                },
+                error: function () {
+                  // Handle errors here
+                  alert("Error occurred during the update.");
+                },
+        });
+        } else {
+          alert('not confirmed')
+          // User clicked "Cancel," do nothing or provide feedback
+          // You can optionally add a message here or take other actions.
+        }
+
+
+       
+        // Perform the update using AJAX (you'll need to implement this)
+        // You can use productId and updatedTargetLink to send the data to your server
+        // ...
+      }
+
+</script>
