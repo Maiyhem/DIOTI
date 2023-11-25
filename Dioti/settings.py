@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -134,10 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
+CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {
     'periodic-task': {
         'task': 'price_scrapper.tasks.periodic_task',
-        'schedule': 3600,  #Run every x seconds
+        'schedule': timedelta(minutes=20),  #Run every x seconds
     },
 }

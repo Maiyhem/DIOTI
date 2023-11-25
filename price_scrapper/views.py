@@ -1,4 +1,5 @@
 import datetime
+import random
 from django.utils import timezone
 from bs4 import BeautifulSoup
 from django.shortcuts import get_object_or_404, render
@@ -14,6 +15,7 @@ import requests
 # Create your views here.
 
 def index(request):
+    print(get_exchange_rate())
 
     return render(request, 'Mpage.html',)
 
@@ -50,7 +52,7 @@ def update_product(request):
 
 
 # Define a function to scrape the price from a given URL and save HTML to a file
-def scrape_price(url, product_name):
+def scrape_price(url):
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -91,6 +93,8 @@ def scrape_price(url, product_name):
             return price
     except Exception as e:
         return 'error {e}'
+
+
 
 def scrape_done(request):
 
@@ -284,71 +288,93 @@ def woocomerce_login():
     headers = {
         'Authorization': auth_header ,
         'Content-Type': 'application/json'
-            }
+        }
 
     return headers
 
 
 
 
-def check_price_change(product):
-
-    try:
-        url = product.target_link
-
-        
-        response = requests.get(url)
-        price = None
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Check the website domain and extract the price accordingly
-            if "https://www.afrangdigital.com/" in url:
-                price_element = soup.find('span', itemprop='price')
-                if price_element:
-                    price = price_element.get_text(strip=True)
-                    if price != 'تماس بگیرید':
-                        price = price.replace('ریال', '').replace(',', '').strip()
-                        price = price[0:len(price)-1]
+def check_price_change():
+    products = random.sample(list(Product.objects.filter(crawl_status='Success')), 20)
+    total_change_status= []
+    
+    for product in products:
+        try:
+            url = product.target_link
+            response = requests.get(url)
+            price = None
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Check the website domain and extract the price accordingly
+                if "https://www.afrangdigital.com/" in url:
+                    price_element = soup.find('span', itemprop='price')
+                    if price_element:
+                        price = price_element.get_text(strip=True)
+                        if price != 'تماس بگیرید':
+                            price = price.replace('ریال', '').replace(',', '').strip()
+                            price = price[0:len(price)-1]
+                        else:
+                            price = 'CallUs'
+                elif "https://noornegar.com/" in url:
+                    product_box = soup.find('div', class_ = 'products-inner')
+                    soup = product_box
+                    price_element = soup.find('span', class_='woocommerce-Price-amount')
+                    if price_element:
+                        price = price_element.find('bdi').get_text(strip=True)
+                        if price:
+                            price = price.replace('تومان', '').replace(',', '').strip()
+                            price = translate_persian_numerals_to_latin(price)
                     else:
                         price = 'CallUs'
-            elif "https://noornegar.com/" in url:
-                product_box = soup.find('div', class_ = 'products-inner')
-                soup = product_box
-                price_element = soup.find('span', class_='woocommerce-Price-amount')
-                if price_element:
-                    price = price_element.find('bdi').get_text(strip=True)
-                    if price:
-                        price = price.replace('تومان', '').replace(',', '').strip()
-                        price = translate_persian_numerals_to_latin(price)
-                else:
-                    price = 'CallUs'
-            elif "https://www.didnegar.com/" in url:
-                product_box = soup.find('div', class_ = 'woocommerce-main-3-row-single')
-                soup = product_box
-                price_element = soup.find('span', class_='woocommerce-Price-amount')
-                if price_element:
-                    price = price_element.get_text(strip=True)
-                    if price:
-                        price = price.replace('تومان', '').replace(',', '').strip()
-                        price = translate_persian_numerals_to_latin(price)
-                else:
-                    price = 'CallUs'
-        if price != product.scrap_price :
-            print('changed')
-        print(product.id)
+                elif "https://www.didnegar.com/" in url:
+                    product_box = soup.find('div', class_ = 'woocommerce-main-3-row-single')
+                    soup = product_box
+                    price_element = soup.find('span', class_='woocommerce-Price-amount')
+                    if price_element:
+                        price = price_element.get_text(strip=True)
+                        if price:
+                            price = price.replace('تومان', '').replace(',', '').strip()
+                            price = translate_persian_numerals_to_latin(price)
+                    else:
+                        price = 'CallUs'
+        
+            if price and price != product.scrap_price :
+                total_change_status.append('changed')
+                print('changed')
 
+            print(str(product.id) + 'not changed')
+        except Exception as e:
+            print(f'Error checking price for Product ID {product.id}: {str(e)}')
+            pass
+    if len(total_change_status) > 3:
+        return True
+    else:
+        return False
 
-    except Exception as e:
-        print(f'Error checking price for Product ID {product.id}: {str(e)}')
+    
 
 
 
 
 def get_exchange_rate():
-    try:
+    url = "https://www.tgju.org/profile/price_aed"
+    response = requests.get(url)
+    if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            target_element = soup.select_one("#main > div.stocks-profile > div.fs-row.bootstrap-fix.widgets.full-w-set.profile-social-share-box > div.row.tgju-widgets-row > div.tgju-widgets-block.col-md-12.col-lg-4.tgju-widgets-block-bottom-unset.overview-first-block > div > div:nth-child(2) > div > div.tables-default.normal > table > tbody > tr:nth-child(1) > td.text-left")
+            aed_price =  target_element.get_text()
+            aed_price = aed_price.replace(',', '').strip()
+            #print(aed_price)
+            return aed_price
+    else :
+        print('error geting exchange rate')
+        return None
+
+    ''' try:
         # توکن دسترسی خود را جایگزین YOUR_ACCESS_KEY کنید.
-        access_key = '253137d03489e3a14b9eb0d80846dcab'
+        access_key = '2ae1cde49f8dc5311957fe25'
         
         # اینجا شما می‌توانید پارامترهای خود را برای درخواست تعیین کنید.
         params = {
@@ -356,9 +382,12 @@ def get_exchange_rate():
             'base': 'GBP',  # ارز پایه
             'symbols': 'AED,IRR'  # نمادهای ارزی که می‌خواهید نرخ مبادله آنها را دریافت کنید.
         }
-
-        api_url = 'http://api.exchangeratesapi.io/v1/latest'
-        response = requests.get(api_url, params=params)
+        
+        api_url = 'https://v6.exchangerate-api.com/v6/'+access_key+'/history/AED/2023/11/24'
+        response = requests.get(api_url,)
+        print(response.json())
+        api_url = 'https://v6.exchangerate-api.com/v6/'+access_key+'/latest/IRR'
+        response = requests.get(api_url,)
 
         if response.status_code == 200:
             data = response.json()
@@ -373,5 +402,5 @@ def get_exchange_rate():
             print(data)
             return None
     except Exception as e:
-        print(f"Error getting exchange rate: {e}")
-        return None
+        print(f"Error getting exchange rate: {e}")'''
+    return None
