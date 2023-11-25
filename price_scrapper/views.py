@@ -18,20 +18,28 @@ def index(request):
     return render(request, 'Mpage.html',)
 
 
-def home(request):
+@login_required(login_url="/accounts/login/")
+def products(request):
     products = Product.objects.all()
-    return render(request, 'home.html', {'products': products})
+    return render(request, 'products.html', {'products': products})
 
 
+@login_required(login_url="/accounts/login/")
 def logs(request):
     products = Product.objects.all()
     return render(request, 'logs.html', {'products': products})
 
 
-
+@login_required(login_url="/accounts/login/")
 def dashboard(request):
 
-    return render(request, 'index.html',)
+    p = Product.objects.filter(crawl_status = 'Success')
+    success_num = len(p)
+    context ={
+        'success_num': success_num
+    }
+    return render(request, 'index.html',context)
+
 
 
 
