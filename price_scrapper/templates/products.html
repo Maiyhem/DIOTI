@@ -578,7 +578,7 @@ button {
     </thead>
     <tbody>
         {% for p in products %}
-        {% if p.crawl_status == 'Could not scrape price' or p.crawl_status == 'error'%}
+        {% if p.crawl_status == 'error'%}
         <tr scope="row">
             <td>{{p.id}}</td>
             <td><a href="#">{{p.name}}</a></td>
