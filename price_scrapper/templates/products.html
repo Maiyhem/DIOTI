@@ -481,7 +481,6 @@ button {
         
                 </div>
             </div>
-
         <div id="menu2" class="tab-pane fade  show in" style="text-align: right;">
             <div class="table-responsive">
                 {% csrf_token %}
@@ -558,11 +557,11 @@ button {
                 </table>
         </div>
                 </div>
-            </div>
+            
         <div id="menu3" class="tab-pane fade  show in" style="text-align: right;">
             <div class="table-responsive">
                 {% csrf_token %}
-             <table id="myTable" class="table custom-table">
+             <table id="myTable4" class="table custom-table">
     <thead>
         <tr>  
             <th scope="col">ID</th>
@@ -579,7 +578,7 @@ button {
     </thead>
     <tbody>
         {% for p in products %}
-        {% if p.crawl_status == 'Could not scrape price' or p.crawl_status == 'error'%}
+        {% if p.crawl_status == 'error'%}
         <tr scope="row">
             <td>{{p.id}}</td>
             <td><a href="#">{{p.name}}</a></td>
@@ -610,15 +609,17 @@ button {
                 <button class="btn btn-primary" onclick="updateProduct('{{ p.id }}')">
                     confirm
                 </button>
+                <!-- .squaredThree -->
                 <div class="slideThree">
-                    <input
-                        type="checkbox"
-                        value="None"
-                        id="slideThree_{{p.id}}"
-                        name="check"
-                        onchange="toggleInputs({{ p.id }})"
-                    />
-                    <label for="slideThree_{{p.id}}"></label>
+                <input
+                    type="checkbox"
+                    value="None"
+                    id="slideThree_{{p.id}}"
+                    name="check"
+                    onchange="toggleInputs({{ p.id }})"
+                    
+                />
+                <label for="slideThree_{{p.id}}"></label>
                 </div>
             </td>
         </tr>
@@ -629,9 +630,10 @@ button {
                 </div>
             </div>
     </div>
+    </div>
+  
 
-
-</div> <!-- 		End of Container -->
+    <!-- 		End of Container -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script>
 
@@ -640,7 +642,8 @@ $(document).ready(function(){
         $('#myTable1').dataTable();
         $('#myTable2').dataTable();
         $('#myTable3').dataTable();
-    });  
+        $('#myTable4').dataTable();
+         });  
 
 
 function toggleInputs(productId) {

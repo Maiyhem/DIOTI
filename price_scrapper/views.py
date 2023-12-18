@@ -211,7 +211,7 @@ def translate_persian_numerals_to_latin(text):
 
 def update_website_price(product):
     product_id = product.id
-    new_price = product.web_price
+    new_price = product.scrap_price
     status = product.crawl_status
     link = product.target_link
     product_name = product.name
@@ -225,7 +225,7 @@ def update_website_price(product):
             }
     else : 
         new_price_data = {
-                'regular_price': int(float(0))
+                'regular_price': ''
             }
 
     
