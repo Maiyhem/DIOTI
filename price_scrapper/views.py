@@ -229,7 +229,7 @@ def update_website_price(product):
             }
 
     
-    if  link != '' and (product.last_web_price_update == None or product.last_web_price_update < (timezone.now() - datetime.timedelta(days=1))):
+    if  (link != '' or link != None) and (product.last_web_price_update == None or product.last_web_price_update < (timezone.now() - datetime.timedelta(days=1))):
     
         # Construct the update URL for the specific product
         # Define the new price in the format expected by WooCommerce
