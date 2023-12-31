@@ -37,23 +37,23 @@ def scrap_update_all_prices():
                 if (linkprice != 'CallUs') and ('error' not in linkprice):
                     product.scrap_price = linkprice
                     product.crawl_status = "Success"
-                    product.last_scrape = timezone.now()
+                    product.last_scrape = datetime.now()
                     product.save()
                     print(f'Updated Database price for {product.name} to {linkprice}')
                 elif product.AED_price and exchange_rate != None:
                     product.scrap_price = product.AED_price * exchange_rate
                     product.crawl_status = "No link Success AED"
-                    product.last_scrape = timezone.now()
+                    product.last_scrape = datetime.now()
                     product.save()
                 else :
                     product.scrap_price = ''
                     product.crawl_status = "Error or Callus"
-                    product.last_scrape = timezone.now()
+                    product.last_scrape = datetime.now()
                     product.save()
         elif product.AED_price and exchange_rate != None:
             product.scrap_price = product.AED_price * exchange_rate
             product.crawl_status = "Success AED"
-            product.last_scrape = timezone.now()
+            product.last_scrape = datetime.now()
             product.save()
 
     response_data = {'message': 'Success'}
