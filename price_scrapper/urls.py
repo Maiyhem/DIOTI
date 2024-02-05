@@ -3,6 +3,8 @@ from . import views
 
 urlpatterns = [
 
+    
+   path('ocp/', views.ocp, name='ocp'),
    path('logs/', views.logs, name='logs'),
    path('products/', views.products, name='products'),
    path('dashboard/', views.dashboard, name='dashboard'),

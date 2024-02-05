@@ -27,6 +27,12 @@ def products(request):
 
 
 @login_required(login_url="/accounts/login/")
+def ocp(request):
+    products = Product.objects.all()
+    return render(request, 'ocp.html', {'ocp': products})
+
+
+@login_required(login_url="/accounts/login/")
 def logs(request):
     products = Product.objects.all()
     return render(request, 'logs.html', {'products': products})
