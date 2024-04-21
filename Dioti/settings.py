@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'price_scrapper',
     'oneclickproduct',
+    'import_export',
 ]
 
 MIDDLEWARE = [
