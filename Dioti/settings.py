@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'price_scrapper',
+    'oneclickproduct',
+    'import_export',
 ]
 
 MIDDLEWARE = [
