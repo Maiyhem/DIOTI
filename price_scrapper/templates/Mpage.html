@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+      body {
+    margin: 0;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    height: 100vh;
+    font: 5vh Lora;
+    overflow: hidden; /* Ensure no scroll bars */
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+        .container {
+            display: flex;
+            height: 80dvh;
+            padding: 10px;
+        }
+        .column {
+            flex: 1;
+            max-height: 90%;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            margin: 10px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.6s ease forwards;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Hawaii-inspired color palette */
+        .column:nth-child(1) { background-color: #1f1f1fc1; animation-delay: 0.2s; }
+        .column:nth-child(2) { background-color: #1f1f1fc1; animation-delay: 0.4s; }
+        .column:nth-child(3) { background-color: #1f1f1fc1; animation-delay: 0.6s; }
+        .column:nth-child(4) { background-color: #1f1f1fc1; animation-delay: 0.8s; }
+        .column:nth-child(5) { background-color: #1f1f1fc1; animation-delay: 1s; }
+        .column:nth-child(6) { background-color: #1f1f1fc1; animation-delay: 1.2s; }
+        .column:nth-child(7) { background-color: #1f1f1fc1; animation-delay: 1.4s; }
+        .column:nth-child(8) { background-color: #1f1f1fc1; animation-delay: 1.6s; }
+        .city {
+            z-index: -2;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background-size:contain;
+            background-image: url('../static/city2.png');
+        }
+        .falling, .falling2 {
+            z-index: 10;
+            position: absolute;
+            width: auto;
+            height: 25%;
+            background-size: contain;
+            transform: rotate(300deg);
+        }
+        .falling {
+            bottom: 40%;
+            right: 20%;
+            opacity: 30%;
+            z-index: -1;
+        }
+        .falling2 {
+          z-index: -1;
+            bottom: 39%;
+            right: 20%;
+        }
+        header {
+            height: 70px;
+            text-align: center;
+            color: white;
+        }
+        .header img {
+            width: 50px;
+        }
+        .header a {
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+            font-size: 18px;
+            line-height: 25px;
+            border-radius: 4px;
+        }
+        .header-right {
+            float: right;
+            display: flex;
+            align-items: center;
+        }
+        .header-left {
+            float: left;
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            margin-top: -10px;
+        }
+        .book-button {
+            padding: 10px 30px;
+            border-radius: 15px;
+            background-color: black;
+            color: white;
+            border: solid 3px white;
+        }
+        .book-button:hover {
+            background-color: white;
+            color: black;
+            border: solid 3px #FF6F61;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+           /* background-color: rgba(0, 0, 0, 0.8);*/
+            padding-top: 60px;
+            animation: modalBackgroundFadeIn 0.5s ease forwards;
+        }
+        
+@keyframes modalBackgroundFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+        .modal-content {
+          animation: modalFadeIn 0.5s ease forwards;
+          direction: rtl;
+          background-color: #1a1a1a;
+          margin-right: 30px    ;
+          /* border: 1px solid #888; */
+          width: 100%;
+          color: white;
+          height: 100%;
+          overflow: auto;
+          display: flex;
+          
+          flex-direction: column;
+          justify-content: space-between;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0.9;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close {
+    color: #ffffff;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 15px;
+    background-color: #009B77;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background-color: #007A5E;
+}
+    </style>
+   
+</head>
+<body>
+  <script>
+
+    console.clear();
+    const canvas = document.createElement('canvas');
+    document.body.append(canvas);
+    canvas.style.display = 'block';
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const gl = canvas.getContext('webgl2');
+    if (!gl) {
+        alert('require webgl 2.0, bye')
+    }
+    
+    const vss = `#version 300 es
+    in vec2 p;
+    void main() {
+      gl_Position = vec4(p, 0.0, 1.0);
+    }
+    `;
+    
+    const fss = `#version 300 es
+    precision mediump float;
+    out vec4 o;
+    uniform vec4 c;
+    void main() {
+      o = c;
+    }
+    `;
+    
+    const vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs, vss);
+    gl.compileShader(vs);
+    if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(vs));
+        throw 1;
+    }
+    
+    const fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs, fss);
+    gl.compileShader(fs);
+    if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(fs));
+        throw 2;
+    }
+    
+    const prg = gl.createProgram();
+    gl.attachShader(prg, vs);
+    gl.attachShader(prg, fs);
+    gl.linkProgram(prg);
+    if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(prg));
+        throw 3;
+    }
+    
+    gl.detachShader(prg, vs);
+    gl.deleteShader(vs);
+    gl.detachShader(prg, fs);
+    gl.deleteShader(fs);
+    
+    const $p = gl.getAttribLocation(prg, 'p');
+    const $c = gl.getUniformLocation(prg, 'c');
+    
+    const va = gl.createVertexArray();
+    gl.bindVertexArray(va);
+    
+    const N = 1000; // n triangles
+    
+    let ps;
+    {    
+        ps = new Float32Array(2 + N * 2 * 2);
+        ps[0] = 0; // clip space center
+        ps[1] = -1;
+        let j = 2;
+        for (let i = 0; i < N; ++i) {
+            ps[j++] = Math.random() * 2 - 1; //x 
+            ps[j++] = Math.random() * 2 - 3; //y
+            ps[j++] = Math.random() * 2 - 1; //x 
+            ps[j++] = Math.random() * 2 - 1; //y
+        }
+    }
+    
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, ps, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray($p);
+    gl.vertexAttribPointer(
+        $p,
+        2, gl.FLOAT, // two 32b-float (8bytes)
+        false,
+        0, // skip n byte to fetch next
+        0  // skip n byte to fetch first
+    );
+    
+    let idxs; 
+    { 
+        idxs = new Uint16Array(3 * N);
+        let j = 0;
+        for (let i = 0; i < N; ++i) {
+            idxs[j++] = 0;
+            idxs[j++] = 1 + i * 2;
+            idxs[j++] = 2 + i * 2;
+        }
+    }
+    
+    const ibuf = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuf);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idxs, gl.STATIC_DRAW);
+    
+    gl.bindVertexArray(null);
+    
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0.1, 0.1, 0.1, 1);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND);
+    gl.disable(gl.CULL_FACE);
+    gl.useProgram(prg);
+    gl.bindVertexArray(va);
+    
+    function f() {
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform4fv($c, [0.2, 0.2, 0.2, 0.02]);
+        gl.drawElements(
+            gl.TRIANGLES,
+            idxs.length, // n indices
+            gl.UNSIGNED_SHORT, // ui16
+            0 // skip n bytes to fetch first
+        );
+    }
+    f();
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    document.body.onmousemove = (e) => {
+        ps[0] = e.clientX / window.innerWidth * 2 - 1;
+        ps[1] = -1 * (e.clientY / window.innerHeight * 2 + 1);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, ps.slice(0, 3)); // that's why DYNAMIC_DRAW
+        f();
+    }
+  </script> 
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <a><h1>-DI0TI-</h1></a>
+            </div>
+            <div class="header-right">
+                <a href="#contact">Contact</a>
+                <a href="logout">LogOut</a>
+                <a href="/dashboard/"><button class="book-button">Profile</button></a>
+            </div>
+        </div>
+    </header>
+    <div class="city"></div>
+    <div class="container">
+        <div class="column" id="intro">
+            <h2>اطلاعات شخصی</h2>
+        </div>
+        <div class="column" id="about">
+            <h2>درباره‌ی من</h2>
+        </div>
+        <div class="column" id="portfolio">
+            <h2>سوابق شغلی</h2>
+        </div>
+        <div class="column" id="services">
+            <h2>سوابق تحصیلی</h2>
+        </div>
+        <div class="column" id="testimonials">
+            <h2>مهارت‌ها</h2>
+        </div>
+        <div class="column" id="contact">
+            <h2>زبان‌های مسلط</h2>
+        </div>
+    </div>
+    <img class="falling" src="../static/falling.png" alt="falling">
+    <img class="falling2" src="../static/falling.png" alt="falling">
+
+    <!-- Modals -->
+    <div id="modal-intro" class="modal">
+        <div class="modal-content">
+            <span class="close"><</span>
+            <h2>اطلاعات شخصی</h2>
+            <p>داود خوب بخت</p>
+            <p>تخصص: برنامه نویس فول استک</p>
+            <p>آدرس ایمیل: davoodkhobbakht@gmail.com</p>
+            <p>شماره موبایل: ۰۹۱۲۶۱۷۱۲۷۹</p>
+            <p>سال تولد: ۱۳۷۶</p>
+            <p>جنسیت: مرد</p>
+            <p>وضعیت سربازی: مشمول</p>
+            <p>وضعیت تأهل: مجرد</p>
+            <p>استان سکونت: تهران</p>
+            <p>آدرس: بزرگراه محلاتی خ مخبر شمالی</p>
+        </div>
+    </div>
+    <div id="modal-about" class="modal">
+        <div class="modal-content">
+            <span class="close"><</span>
+            <h2>درباره‌ی من</h2>
+            <p>طی سالهایی که در زمینه کامپیوتر فعالیت کرده‌ام (حدودا ۱۵ سال) با تکنولوژی‌ها و زبان‌های مختلفی آشنا شدم و برای پروژه‌های مختلفی بکار گرفتم. همواره به دنبال یادگیری بوده‌ام و معتقدم هیچ چالشی غیرقابل حل نیست. در جستجوی موقعیت شغلی‌ای هستم که نیاز به خلاقیت و مهارت داشته باشد و فعالیت در یک تیم متخصص به موضوعات مالی ارجحیت دارد. در حال حاضر به زبان پایتون کد میزنم اما با زبان‌های C, C++, C#, Java, PHP آشنایی کامل دارم و در صورت نیاز میتوانم با این زبان‌ها هم کد بزنم.</p>
+        </div>
+    </div>
+    <div id="modal-portfolio" class="modal">
+        <div class="modal-content">
+            <span class="close"><</span>
+            <h2>سوابق شغلی</h2>
+            <p>مدیر پروژه - دوربین شات - از شهریور ۱۴۰۲ تا حالا</p>
+            <p>برنامه نویس فول استک - نیوپال (پارس نت سازه ایرانیان) - از دی ۱۴۰۱ تا حالا</p>
+            <p>برنامه نویس پایتون و طراح وبسایت - هسته فناوری سام - از تیر ۱۳۹۹ تا تیر ۱۴۰۰</p>
+            <p>کارشناس داده - همراه اول - از آبان ۱۳۹۸ تا خرداد ۱۳۹۹</p>
+            <p>برنامه نویس VB.NET - پایپکس - از خرداد ۱۳۹۶ تا اسفند ۱۳۹۷</p>
+            <p>مدرس زبان - گل زهرا - از آبان ۱۳۹۵ تا تیر ۱۳۹۷</p>
+            <p>مدرس زبان - هیوا - از مهر ۱۳۹۴ تا مهر ۱۳۹۶</p>
+        </div>
+    </div>
+    <div id="modal-services" class="modal">
+        <div class="modal-content">
+            <span class="close"><</span>
+            <h2>سوابق تحصیلی</h2>
+            <p>مهندسی نرم افزار (کارشناسی) - آزاد تهران جنوب - از ۱۳۹۵ (در حال تحصیل)</p>
+            <p>برنامه نویسی C++ - پژوهش سرای خوارزمی - از ۱۳۸۸ تا ۱۳۹۱</p>
+            <p>برنامه نویسی C# - مجتمع فنی تهران - از ۱۳۹۴ تا ۱۳۹۵</p>
+            <p>برنامه نویسی جاوا موبایل (دیپلم) - مجتمع فنی تهران - از ۱۳۹۷ تا ۱۳۹۸</p>
+        </div>
+    </div>
+    <div id="modal-testimonials" class="modal">
+        <div class="modal-content">
+            <span class="close"><</span>
+            <h2>مهارت‌ها</h2>
+            <p>برنامه نویسی پایتون</p>
+            <p>Django</p>
+            <p>REST</p>
+            <p>SQL</p>
+            <p>git</p>
+            <p>Javascript</p>
+            <p>CSS</p>
+            <p>HTML</p>
+            <p>Linux Ubuntu</p>
+            <p>تسلط بر وردپرس</p>
+            <p>برنامه نویسی پی اچ پی</p>
+            <p>Django ORM</p>
+            <p>برنامه نویس C</p>
+            <p>برنامه نویس ++C</p>
+            <p>برنامه نویس C#</p>
+            <p>برنامه نویس Java</p>
+        </div>
+    </div>
+    <div id="modal-contact" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>زبان‌های مسلط</h2>
+            <p>انگلیسی (حرفه‌ای)</p>
+            <p>فارسی (زبان مادری)</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const columns = document.querySelectorAll('.column');
+    const modals = document.querySelectorAll('.modal');
+    const spans = document.querySelectorAll('.close');
+    const backButton = document.querySelectorAll('.back-button');
+
+    columns.forEach(column => {
+        column.addEventListener('click', function() {
+            const modalId = `modal-${this.id}`;
+            document.getElementById(modalId).style.display = "block";
+        });
+    });
+
+    spans.forEach(span => {
+        span.addEventListener('click', function() {
+            this.parentElement.parentElement.style.display = "none";
+        });
+    });
+
+    backButton.forEach(button => {
+        button.addEventListener('click', function() {
+            this.parentElement.parentElement.style.display = "none";
+        });
+    });
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    };
+});
+    </script>
+</body>
+</html>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const myElement = document.querySelector('#rain');
+
+    myElement.addEventListener('mouseenter', function() {
+        var canvas = document.querySelector('canvas'),
+            ctx = canvas.getContext('2d');
+      
+        canvas.style.visibility = 'visible';
+        canvas.height = window.innerHeight;
+
+        var letters = 'こぁあぃいぅうぇぉおかがきぎくぐけげつっぢだたぞそぜせずじしざさごこづてでどなにぬのばぱィイゥウウェェオカガキソザササゴゲケヂヂチテデトナニヒモムマポボペベベヘヘプブフビュユョョリルロヮワヱンヵヶ〆※々㍿㍐ヿヾヽヺヹヸヸヷ';
+        letters = letters.split('');
+
+        var fontSize = 10,
+            columns = canvas.width / fontSize;
+
+        var drops = [];
+        for (var i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < drops.length; i++) {
+                var text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillStyle = '#0f0';
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                drops[i]++;
+                if (drops[i] * fontSize > canvas.height && Math.random() > .95) {
+                    drops[i] = 0;
+                }
+            }
+        }
+
+        setInterval(draw, 20);
+    });
+
+    myElement.addEventListener('mouseleave', function() {
+        var canvas = document.querySelector('canvas');
+        canvas.style.visibility = 'hidden';
+    });
+});
+
+var myElement = document.querySelector('#rain');
+
+myElement.addEventListener('mouseenter', function() {
+
+// Initialising the canvas
+var canvas = document.querySelector('canvas'),
+      ctx = canvas.getContext('2d');
+  
+    canvas.style.visibility = 'visible';
+  // Setting the width and height of the canvas
+  canvas.height = window.innerHeight;
+  
+  // Setting up the letters
+  var letters = 'こぁあぃいぅうぇぉおかがきぎくぐけげつっぢだたぞそぜせずじしざさごこづてでどなにぬのばぱィイゥウウェェオカガキソザササゴゲケヂヂチテデトナニヒモムマポボペベベヘヘプブフビュユョョリルロヮワヱンヵヶ〆※々㍿㍐ヿヾヽヽヺヹヸヸヷ';
+  letters = letters.split('');
+  
+  // Setting up the columns
+  var fontSize = 10,
+      columns = canvas.width / fontSize;
+  
+  // Setting up the drops
+  var drops = [];
+  for (var i = 0; i < columns; i++) {
+    drops[i] = 1;
+  }
+  
+  // Setting up the draw function
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < drops.length; i++) {
+      var text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillStyle = '#0f0';
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      drops[i]++;
+      if (drops[i] * fontSize > canvas.height && Math.random() > .95) {
+        drops[i] = 0;
+      }
+    }
+  }
+  
+  // Loop the animation
+  setInterval(draw, 20);
+
+
+});
+
+myElement.addEventListener('mouseleave', function() {
+  
+var canvas = document.querySelector('canvas');
+canvas.style.visibility = 'hidden';
+});
+
+
+</script>

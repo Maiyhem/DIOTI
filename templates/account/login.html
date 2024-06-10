@@ -1,0 +1,55 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      
+{% load i18n %}
+{% load static %}
+{% load account socialaccount %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+    <title>Price scrapper</title>
+</head>
+<body>
+    <header>
+    </header>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+
+
+    {% for m in messages %}
+
+    <p>{{m}}</p>
+    
+    {% endfor %}
+     
+
+
+
+<form class="login" method="POST" action="{% url 'account_login' %}">
+  <h3>Login</h3>
+  {% csrf_token %}
+  <h4>{{ form.login.label }} </h4>
+  {{ form.login }}
+  <h4>{{ form.password.label }} </h4>
+  {{ form.password }}
+  {% if redirect_field_value %}
+  
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+  <button class="my-btn my-btn-class-31" type="submit">{% trans "Sign In" %}</button>
+</form>
+
+</body>
+</html>
+
+

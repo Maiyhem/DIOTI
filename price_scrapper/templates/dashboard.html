@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<style>
+  
+</style>
+<!-- Start-->
+<div style="padding: 20px;">
+
+<div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+  <div class="card-header">وضعیت</div>
+  <div class="card-body">
+    <h5 class="card-title">موفق {{ success_num }}</h5>
+    <h5 class="card-title">ناموفق {{ error_num }}</h5>
+    <h5 class="card-title">تماس بگیرید {{ callus_num }}</h5>
+    </div>
+</div>
+<button class="btn btn-secondary" id="updateProductListBtnloading" style="display: none;" >Loading...</button>
+  <button class="btn btn-primary" id="updateProductListBtn" >بروزرسانی دیتای برنامه</button>
+
+  <button class="btn btn-secondary" id="scrapAllloading" style="display: none;" >Loading...</button>
+  <button class="btn btn-primary" id="scrapAll">گرفتن قیمت ها</button>
+
+  <button class="btn btn-secondary" id="webPriceUpdateloading" style="display: none;" >Loading...</button>
+  <button class="btn btn-primary" id="webPriceUpdate">درج قیمت ها در سابت</button>
+</div>
+<!-- End -->
+
+
+<div>
+  
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+<script>
+  $(document).ready(function() {
+        $("#updateProductListBtn").click(function() {
+            $('#updateProductListBtnloading').show()  ;
+            $("#updateProductListBtn").hide()
+            $.ajax({
+                url: "{% url 'update-product-list' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data === true) {
+                        // Refresh the page upon success
+                        window.location.reload();
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                complete:function(data){
+                  $('#updateProductListBtnloading').hide()  ;
+                  $("#updateProductListBtn").show()
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                }
+            });
+        });
+    });
+
+   
+
+    $(document).ready(function() {
+        $("#scrapAll").click(function() {
+            $('#scrapAllloading').show()  ;
+            $("#scrapAll").hide()
+            $.ajax({
+                url: "{% url 'scrape_prices' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data['message'] === 'Success') {
+                        // Refresh the page upon success
+
+                        alert("Update Success.");
+                        window.location.href('{url "scrape_done"}');
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                },
+                complete:function(data){
+
+                $('#scrapAllloading').hide()  ;
+                $("#scrapAll").show()
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function() {
+        $("#webPriceUpdate").click(function() {
+
+            $('#webPriceUpdateloading').show()  ;
+            $("#webPriceUpdate").hide()
+            $.ajax({
+                url: "{% url 'web-prices' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data.success === true) {
+                        // Refresh the page upon success
+                        window.location.reload();
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                },
+                complete:function(data){
+
+                $('#webPriceUpdateloading').hide()  ;
+                $("#webPriceUpdate").show()
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}

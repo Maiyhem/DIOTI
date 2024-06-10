@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/owl.carousel.min.css">
+    <link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Vazirmatn' rel='stylesheet'>
+
+    <title>Price scrapper table</title>
+      <!-- Change this page style here -->
+    
+{% block stylesheets %}
+{% endblock stylesheets %}
+  </head>
+<style>
+  body{
+    background-color: #F1F7F9;
+  }
+  thead{
+    text-align: center;
+    align-content: center;
+    font-size: 15px;}
+
+  .my-btn {
+    margin: 20px;
+  align-items: center;
+  appearance: none;
+  background-image: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+  border: 0;
+  border-radius: 6px;
+  box-shadow: rgba(45, 35, 66, .4) 0 2px 4px,rgba(45, 35, 66, .3) 0 7px 13px -3px,rgba(58, 65, 111, .5) 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: 'Vazirmatn';
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 18px;
+}
+
+.my-btn:focus {
+  box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, .4) 0 2px 4px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+}
+
+.my-btn:hover {
+  box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.my-btn:active {
+  box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(2px);
+}
+/* CSS */
+.tab-tab {
+  align-content: center;
+  text-align: center;
+  margin: 10px;
+  background: radial-gradient(100% 100% at 100% 0, #5adaff 0, #5468ff 100%);
+  border-radius: 6px;
+  box-shadow: #3c4fe0 0 10px 20px -10px;
+  width: 130px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: 'Vazirmatn';
+  font-size: 16px;
+  line-height: 24px;
+  opacity: 1;
+  outline: 0 solid transparent;
+  padding: 8px 18px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  word-break: break-word;
+  border: 0;
+  transition: box-shadow .15s,transform .15s;
+}
+.tab-tab a{
+  color: white;
+}
+.tab-tab:hover {
+  box-shadow: rgba(45, 35, 66, .4) 0 4px 8px, rgba(45, 35, 66, .3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+.tab-tab:active {
+  box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+</style>
+  <body>
+  <div class="content">
+    <button class="my-btn  my-btn-class-31" id="updateProductListBtnloading" style="display: none;" >Loading...</button>
+    <button class="my-btn my-btn-class-31" id="updateProductListBtn" >بروزرسانی لیست محصولات</button>
+
+    <button class="my-btn  my-btn-class-31" id="scrapAllloading" style="display: none;" >Loading...</button>
+    <button class="my-btn my-btn-class-31" id="scrapAll">گرفتن قیمت ها</button>
+
+    <button class="my-btn  my-btn-class-31" id="webPriceUpdateloading" style="display: none;" >Loading...</button>
+    <button class="my-btn my-btn-class-31" id="webPriceUpdate">بروزرسانی قیمت ها در سایت</button>
+
+<!-- Modal -->
+    <ul class="nav nav-tabs">
+      <button class="tab-tab liclass"><a data-toggle="tab" href="#home"> همه <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></button>   
+      <button class="tab-tab liclass"><a data-toggle="tab" href="#success"  >قیمت دار <span name ='table1_title' id ='table1_title' class="button__badge"></span></a></button>
+      <button  class="tab-tab liclass"><a data-toggle="tab" href="#menu1" >بدون قیمت <span name ='table2_title' id ='table2_title' class="button__badge"></span> </a> </button>
+      <button  class="tab-tab liclass"><a data-toggle="tab" href="#menu2" >تماس بگیرید <span name ='table3_title' id ='table3_title' class="button__badge"></span></a>  </button>
+      <button  class="tab-tab liclass"><a data-toggle="tab" href="#menu3">خطا<span name ='table4_title' id ='table4_title' class="button__badge"></span> </a></button>
+      
+    </ul>
+
+
+
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade active show in" style="text-align: right;">
+      <div class="table-responsive">
+        {% csrf_token %}
+        <table id="myTable" class="table custom-table">
+          
+          <thead>
+            <tr>  
+              
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">Link</th>
+              <th scope="col">Status</th>
+              <th scope="col">Last Price Update</th>
+              <th scope="col">Last scraped</th>
+              <th scope="col">Web Price</th>
+              <th scope="col">Scrap Price</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+             {% for p in products %}
+            <tr scope="row">
+              <td>
+                {{p.id}}
+              </td>
+              <td><a href="#">{{p.name}}</a></td>
+              <td style="width: 300px;">
+                <input
+                    id = "targetLink_{{p.id}}"
+                    type="text"
+                    class="target-link-input"
+                    value="{{ p.target_link }}"
+                  />
+              </td>
+              <td>{{p.crawl_status}}</td>
+              <td>{{p.last_web_price_update}}</td>
+              <td>{{p.last_scrape}}</td>
+              <td>{{p.web_price}}</td>
+              <td>{{p.scrap_price}}</td>
+              <td>  <input
+                disabled
+                id = "targetLink_{{p.id}}"
+                type="text"
+                class="target-link-input"
+                value="{{ p.AED_price }}"
+              /></td>
+              <td>
+               <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+        
+              
+              </td>
+            </tr>
+            
+            {% endfor %}
+          </tbody>
+        
+        </table>
+
+      </div>
+      </div>
+      <div id="success" class="tab-pane fade  show in" style="text-align: right;">
+        <div class="table-responsive">
+          {% csrf_token %}
+          <table id="myTable" class="table custom-table">
+            
+            <thead>
+              <tr>  
+                
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Price Update</th>ss
+                <th scope="col">Last scraped</th>
+                <th scope="col">Web Price</th>
+                <th scope="col">Scrap Price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              {% for p in products %}
+              {% if p.crawl_status == 'Success'%}
+              <tr scope="row">
+                <td>
+                  {{p.id}}
+                </td>
+                <td><a href="#">{{p.name}}</a></td>
+                <td style="width: 300px;">
+                  <input
+                      id = "targetLink_{{p.id}}"
+                      type="text"
+                      class="target-link-input"
+                      value="{{ p.target_link }}"
+                    />
+                </td>
+                <td>{{p.crawl_status}}</td>
+                <td>{{p.last_web_price_update}}</td>
+                <td>{{p.last_scrape}}</td>
+                <td>{{p.web_price}}</td>
+                <td>{{p.scrap_price}}</td>
+                <td>
+                <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          
+          </table>
+
+        </div>
+      </div>
+      <div id="menu1" class="tab-pane fade  show in" style="text-align: right;">
+        <div class="table-responsive">
+          {% csrf_token %}
+          <table id="myTable" class="table custom-table">
+            
+            <thead>
+              <tr>  
+                
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Price Update</th>
+                <th scope="col">Last scraped</th>
+                <th scope="col">Web Price</th>
+                <th scope="col">Scrap Price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              {% for p in products %}
+              {% if p.crawl_status == 'No Price'%}
+              <tr scope="row">
+                <td>
+                  {{p.id}}
+                </td>
+                <td><a href="#">{{p.name}}</a></td>
+                <td style="width: 300px;">
+                  <input
+                      id = "targetLink_{{p.id}}"
+                      type="text"
+                      class="target-link-input"
+                      value="{{ p.target_link }}"
+                    />
+                </td>
+                <td>{{p.crawl_status}}</td>
+                <td>{{p.last_web_price_update}}</td>
+                <td>{{p.last_scrape}}</td>
+                <td>{{p.web_price}}</td>
+                <td>{{p.scrap_price}}</td>
+                <td>
+                <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          
+          </table>
+
+        </div>
+      </div>
+      <div id="menu2" class="tab-pane fade  show in" style="text-align: right;">
+        <div class="table-responsive">
+          {% csrf_token %}
+          <table id="myTable" class="table custom-table">
+            
+            <thead>
+              <tr>  
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Price Update</th>
+                <th scope="col">Last scraped</th>
+                <th scope="col">Web Price</th>
+                <th scope="col">Scrap Price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              {% for p in products %}
+              {% if p.crawl_status == 'Call Us Price'%}
+              <tr scope="row">
+                <td>
+                  {{p.id}}
+                </td>
+                <td><a href="#">{{p.name}}</a></td>
+                <td style="width: 300px;">
+                  <input
+                      id = "targetLink_{{p.id}}"
+                      type="text"
+                      class="target-link-input"
+                      value="{{ p.target_link }}"
+                    />
+                </td>
+                <td>{{p.crawl_status}}</td>
+                <td>{{p.last_web_price_update}}</td>
+                <td>{{p.last_scrape}}</td>
+                <td>{{p.web_price}}</td>
+                <td>{{p.scrap_price}}</td>
+                <td>
+                <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          
+          </table>
+
+        </div>
+      </div>
+      <div id="menu3" class="tab-pane fade  show in" style="text-align: right;">
+        <div class="table-responsive">
+          {% csrf_token %}
+          <table id="myTable" class="table custom-table">
+            
+            <thead>
+              <tr>  
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last Price Update</th>ss
+                <th scope="col">Last scraped</th>
+                <th scope="col">Web Price</th>
+                <th scope="col">Scrap Price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              {% for p in products %}
+              {% if 'error' in p.crawl_status %}
+              <tr scope="row">
+                <td>
+                  {{p.id}}
+                </td>
+                <td><a href="#">{{p.name}}</a></td>
+                <td style="width: 300px;">
+                  <input
+                      id = "targetLink_{{p.id}}"
+                      type="text"
+                      class="target-link-input"
+                      value="{{ p.target_link }}"
+                    />
+                </td>
+                <td>{{p.crawl_status}}</td>
+                <td>{{p.last_web_price_update}}</td>
+                <td>{{p.last_scrape}}</td>
+                <td>{{p.web_price}}</td>
+                <td>{{p.scrap_price}}</td>
+                <td>
+                <button class="btn btn-primary"  onclick= updateProduct({{ p.id }}) >confirm</button>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <script>
+
+
+$(document).ready(function () {
+    $('#updateProductForm').submit(function (e) {
+      e.preventDefault();
+
+      // Serialize the form data
+      var formData = $(this).serialize();
+
+      // Send the form data to the Django view using AJAX
+      $.ajax({
+        type: 'POST',
+        url: '{% url "update_product" %}',
+        data: formData,
+        success: function (response) {
+          if (response.success) {
+            // Optionally, you can close the modal or perform other actions
+            $('#productModal').modal('hide');
+            alert('Product updated successfully!');
+          } else {
+            alert('Failed to update product.');
+          }
+        },
+        error: function () {
+          alert('Error occurred while updating product.');
+        }
+      });
+    });
+  });
+
+
+
+class ModalComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.render();
+  }
+
+  get component() {
+    return this;
+  }
+
+  static get observedAttributes() {
+    return ["open"];
+  }
+
+  modal() {var _this$shadowRoot;
+    return (_this$shadowRoot = this.shadowRoot) === null || _this$shadowRoot === void 0 ? void 0 : _this$shadowRoot.querySelector(".modal");
+  }
+
+  // Open the modal
+
+  open() {
+    this.setAttribute("open", "");
+    this.style.display = "flex";
+    this.setAttribute("aria-hidden", `${!this.isOpen}`);
+    document.body.classList.add("modal-open");
+    setTimeout(() => {var _this$modal;
+      (_this$modal = this.modal()) === null || _this$modal === void 0 ? void 0 : _this$modal.classList.add("show");
+    }, 100);
+  }
+
+  // Close the modal
+
+  close() {var _this$modal2;
+    this.removeAttribute("open");
+    (_this$modal2 = this.modal()) === null || _this$modal2 === void 0 ? void 0 : _this$modal2.classList.remove("show");
+    this.setAttribute("aria-hidden", `${!this.isOpen}`);
+    document.body.classList.remove("modal-open");
+    setTimeout(() => {
+      this.style.display = "none";
+    }, 200);
+  }
+
+  // Check if the modal is open
+
+  get isOpen() {
+    return this.hasAttribute("open");
+  }
+
+  // trigger the modal
+
+  toggle() {
+    if (this.isOpen) {
+      this.close();
+    } else {
+      this.open();
+    }
+  }
+
+  //
+  // Open modal on click toggle button
+
+  connectedCallback() {
+    const toggleButtons = document.querySelectorAll('[data-toggle="modal"]');
+    toggleButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        this.open();
+      });
+    });
+
+    const dismissButtons = document.querySelectorAll('[data-dismiss="modal"]');
+    dismissButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        this.close();
+      });
+    });
+
+    this.addEventListener("click", event => {
+      if (event.target === this) {
+        this.close();
+      }
+    });
+  }
+
+  //
+  // Get placement of the modal
+
+  get placement() {var _this$getAttribute;
+    return (_this$getAttribute = this.getAttribute("data-placement")) !== null && _this$getAttribute !== void 0 ? _this$getAttribute : "top-center";
+  }
+
+  static get styles() {
+    return `
+    <style>
+      .modal-open {
+        overflow: hidden;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        width: 100vw;
+        height: 100dvh;
+        background-color: rgba(0, 0, 0, .5);
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+      }
+
+      .modal-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+      }
+
+      .modal-content {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-color: white;
+        width: 100%;
+        margin: 0;
+        border-radius: .5rem;
+        transform: scale(1.1);
+        transition: visibility .25s ease-out, opacity .25s ease-out, transform .25s ease-out;
+        padding: 1.5rem 0;
+      }
+      @media (min-width: 576px) {
+        .modal-content {
+          max-width: 32rem;
+          margin: 4rem 0;
+        }
+      }
+      .modal.fade .modal-content {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(1.1);
+      }
+      .modal.show .modal-content{
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+      }
+
+      .modal.modal-top-center {
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .modal.modal-top-start {
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+      .modal.modal-top-end {
+        align-items: flex-end;
+        justify-content: flex-start;
+      }
+      .modal.modal-center {
+        align-items: center;
+        justify-content: center;
+      }
+      .modal.modal-center-start {
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .modal.modal-center-end {
+        align-items: flex-end;
+        justify-content: center;
+      }
+      .modal.modal-bottom-center {
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .modal.modal-bottom-start {
+        align-items: flex-start;
+        justify-content: flex-end;
+      }
+      .modal.modal-bottom-end {
+        align-items: flex-end;
+        justify-content: flex-end;
+      }
+      
+      
+
+      </style>
+      `;
+  }
+
+  render() {
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    this.style.display = "none";
+    this.setAttribute("role", "dialog");
+
+    shadowRoot.innerHTML = `
+      ${ModalComponent.styles}
+      <div class='modal fade modal-${this.placement}'>
+        <div class='modal-backdrop'></div>
+        <article class='modal-content' aria-labelledby='modal-title' aria-describedby='modal-body'>
+          <slot></slot>
+        </article>
+      </div>
+      `;
+  }}
+
+
+customElements.define("modal-component", ModalComponent);
+
+
+
+$(document).ready(function(){
+    $('#myTable').dataTable();
+});  
+    $(document).ready(function() {
+        $("#updateProductListBtn").click(function() {
+            $('#updateProductListBtnloading').show()  ;
+            $("#updateProductListBtn").hide()
+            $.ajax({
+                url: "{% url 'update-product-list' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data === true) {
+                        // Refresh the page upon success
+                        location.reload();
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                complete:function(data){
+                  $('#updateProductListBtnloading').hide()  ;
+                  $("#updateProductListBtn").show()
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                }
+            });
+        });
+    });
+
+   
+
+    $(document).ready(function() {
+        $("#scrapAll").click(function() {
+            $('#scrapAllloading').show()  ;
+            $("#scrapAll").hide()
+            $.ajax({
+                url: "{% url 'scrape_prices' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data['message'] === 'Success') {
+                        // Refresh the page upon success
+
+                        alert("Update Success.");
+                        location.href('{url "scrape_done"}');
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                },
+                complete:function(data){
+
+                $('#scrapAllloading').hide()  ;
+                $("#scrapAll").show()
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function() {
+        $("#webPriceUpdate").click(function() {
+
+            $('#webPriceUpdateloading').show()  ;
+            $("#webPriceUpdate").hide()
+            $.ajax({
+                url: "{% url 'web-prices' %}",  // URL of your Django view
+                type: "GET",
+                success: function(data) {
+                    // Handle the success response here
+                    if (data === true) {
+                        // Refresh the page upon success
+                        location.reload();
+                    } else {
+                        // Handle any other response if needed
+                        alert("Update failed.");
+                    }
+                },
+                error: function() {
+                    // Handle errors here
+                    alert("Error occurred during the update.");
+                },
+                complete:function(data){
+
+                $('#webPriceUpdateloading').hide()  ;
+                $("#webPriceUpdate").show()
+                }
+            });
+        });
+    });
+
+    function updateProduct(productId) {
+        // Get the updated target link from the input field
+        const confirmed = confirm("Are you sure you want to update this product?");
+
+        // Check the user's choice
+        if (confirmed) {
+          // User clicked "OK," proceed with the update
+          const updatedTargetLink = $(`#targetLink_${productId}`).val();
+          const data = {
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+          product_id: productId,
+          target_link: updatedTargetLink,
+        };
+
+          $.ajax({
+                url: "{% url 'ajax-update-target-link' %}",  // URL of your Django view
+                type: "POST",
+                data: data,
+                success: function (response) {
+                  // Handle the success response here
+                  if (response.success) {
+                    alert("Update successful!");
+                    // You can update the UI here if needed
+                  } else {
+                    alert("Update failed.");
+                    // Handle any other response if needed
+                  }
+                },
+                error: function () {
+                  // Handle errors here
+                  alert("Error occurred during the update.");
+                },
+        });
+        } else {
+          alert('not confirmed')
+          // User clicked "Cancel," do nothing or provide feedback
+          // You can optionally add a message here or take other actions.
+        }
+
+
+       
+        // Perform the update using AJAX (you'll need to implement this)
+        // You can use productId and updatedTargetLink to send the data to your server
+        // ...
+      }
+
+    </script>
+  </body>
+</html>
